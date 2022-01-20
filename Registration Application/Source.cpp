@@ -384,7 +384,7 @@ public:
 					 std::cin >> toUser;
 					 found = findUsers(toUser);//True if a user is found.
 					 if (found == false) {
-						 std::cout << "No username " << toUser << " exists!" << std::endl;
+						 std::cout << "No username " << toUser << " exists!" << std::endl; //New text!!!
 						 return false;//No uesr was found.
 					 }
 				 }
