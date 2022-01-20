@@ -456,7 +456,7 @@ public:
 			 return false; //False- User has no friends.
 		 }
 		 else { //Friends list does exist.
-			// sortFriends(userName); //Creating issues
+			// sortFriends(userName);
 			 std::cout << "\n***" << userName << "'s friends list ***\n" << std::endl;
 			 while(std::getline(friends, userFriend)) {
 				 std::cout << "-- [" << userFriend << "]" << std::endl;
