@@ -19,11 +19,11 @@
 static char main_Menu()//Prompts user to post or view message threads.
 {
 	char choice = ' ';
-	std::cout << "\n[P] - Post a new message to the Public Board.\n  [V] - View Public Board.\n    [D] - To Send/View a DM.\n      [A] - Add or Remove friends.      \n        [S] - Settings.\n          [L] - Log out.\n\n>";
+	std::cout << "\n[P] - Post a new message to the Public Board.\n  [V] - View Public Board.\n    [D] - To Send/View a DM.\n      [A] - Add or Remove friends.      \n        [S] - Settings.\n          [C] - Clear History.\n            [L] - Log Out.\n\n>";
 	std::cin >> choice;
 	choice = toupper(choice);
 
-	while (choice != 'P' && choice != 'V' && choice != 'L' && choice != 'D' && choice != 'A') {
+	while (choice != 'P' && choice != 'V' && choice != 'L' && choice != 'D' && choice != 'A' && choice != 'C') {
 		std::cout << "\nPlease enter a valid option!" << std::endl;
 		std::cout << "\n[P] - Post a new message to the Public Board.\n  [V] - View Public Board.\n    [D] - To Send/View a DM.\n      [A] - Add friend.      \n        [L] - Log out.\n\n>";
 		std::cin >> choice;
@@ -72,7 +72,7 @@ void displayUsers() { //Displays a list of all usernames.
 //
 //}
 
-class logAction { //Logs user and system actions
+class logAction { //Logs user, time and system actions by overloading action functions.
 
 public:
 	logAction(std::string action) { //No user only string information logged.
@@ -80,7 +80,6 @@ public:
 		log << "[" << getTime() << "] " << action << std::endl;
 
 	}
-
 	logAction(std::string UserName, std::string action) { //User performed an action.
 
 		std::ofstream log("C:/Users/19097/Desktop/Programs/Registration Application/App files/Logs/Logs.txt", std::ios::app);
@@ -114,6 +113,27 @@ public:
 
 };
 
+void clear() {// Clears console
+	bool flag = false;
+	while (flag == false) {
+		COORD topLeft = { 0, 0 };
+		HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_SCREEN_BUFFER_INFO screen;
+		DWORD written;
+
+		GetConsoleScreenBufferInfo(console, &screen);
+		FillConsoleOutputCharacterA(
+			console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
+		);
+		FillConsoleOutputAttribute(
+			console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
+			screen.dwSize.X * screen.dwSize.Y, topLeft, &written
+		);
+		SetConsoleCursorPosition(console, topLeft);
+		flag = true;
+	}
+	std::cout << "***************Console cleared****************" << std::endl;
+}
 
 class User {
 	
@@ -213,41 +233,13 @@ private:
 			sortNamesIn << users[i] << std::endl;
 		}
 	}
-
-	void sortFriends(std::string userName) { //Sorts usernames in username file.
-
-		std::ifstream friends("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt");
-		std::ofstream outFriends;
-		outFriends.open("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt", std::ios::app);
-
-		std::string userString;
-		std::vector<std::string>tempFriends;
-
-		tempFriends.clear();
-		while (std::getline(friends, userString)) {
-			tempFriends.push_back(userString);
-		}
-		std::sort(tempFriends.begin(), tempFriends.end());
-		std::ofstream temp;
-		temp.open("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/-temp.txt");
-
-		for (int i = 0; i < tempFriends.size(); i++) {
-			temp << tempFriends[i] << std::endl;
-		}
-		temp.close();
-		outFriends.close();
-		friends.close();
-		remove(("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt").c_str());
-		rename("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/-temp.txt", ("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt").c_str());
-	}
-
 	std::string getPassWord() //Returns User password.
 	{
 		return passWord;
 	}
-
+	
 public:
-
+	std::vector<std::string>DMContact; //Container for public DM Contact. Show off high profile DM chat contacts. Not actual messages contents.
 	void createUser() { //Creates a new user.
 
 		bool successfullyCreated = false; //Flag check if user was created successfully.
@@ -456,7 +448,6 @@ public:
 			 return false; //False- User has no friends.
 		 }
 		 else { //Friends list does exist.
-			// sortFriends(userName); //Creating issues
 			 std::cout << "\n***" << userName << "'s friends list ***\n" << std::endl;
 			 while(std::getline(friends, userFriend)) {
 				 std::cout << "-- [" << userFriend << "]" << std::endl;
@@ -477,6 +468,7 @@ public:
 	{
 		return UserID;
 	}
+
 };
 
 class Post {	//Will hold the contents of a single post.
@@ -528,90 +520,107 @@ private:
 	std::string messageContent;
 	User fromUser;
 	User toUser;
-	//ifstream friendsList;
 
 public:
-	static char sendMessage(User& currentUser) {
+	static char sendViewMessage(User& currentUser) {
 		std::string toUser; //UserName that will be messaged
 		char choice = ' ';
 		bool userFound = false;
 		std::string fromUser = currentUser.getUserName();
 		char DMCode;
+		std::vector<std::string>externalDMContact;
 		std::string message;//Will hold current message being sent
 		std::string pastMessages; //Will hold line of past message
 		std::ofstream DM_HistoryNew; //Declaration of DM
+		std::cout << "[S] - Send\n[V] - View" << std::endl;
+		std::cin >> choice;
+		choice = toupper(choice);
 
-		
-		while ((choice != 'U' && choice != 'F') && (userFound == false)) {//Lets you find username by search
+		if (choice == 'S') { //Complete Algorithm for sending a DM.
 
-			std::cout << "\nPress [U] - To list all users.\nPress [F] - To find by Username.\n\n>";
-			std::cin >> choice;
-			choice = toupper(choice);
+			while ((choice != 'U' && choice != 'F') && (userFound == false)) {//Lets you find username by search
 
-			if (choice == 'U')
-			{
-				displayUsers();
-				std::cout << "Enter a username to message: ";
-				std::cin >> toUser;
-				userFound = findUsers(toUser);
-				if (userFound == false) {
-					std::cout << "\nNo Username [" << toUser << "] found!" << std::endl;
-					return 'f'; //Failed to find username.
+				std::cout << "\nPress [U] - To list all users.\nPress [F] - To find by Username.\n\n>";
+				std::cin >> choice;
+				choice = toupper(choice);
+
+				if (choice == 'U')
+				{
+					displayUsers();
+					std::cout << "Enter a username to message: ";
+					std::cin >> toUser;
+					userFound = findUsers(toUser);
+					if (userFound == false) {
+						std::cout << "\nNo Username [" << toUser << "] found!" << std::endl;
+						return 'f'; //Failed to find username.
+					}
+					//else{
+					//displayDM(toUser, fromUser)
+				//}
+
 				}
-				//else{
-				//displayDM(toUser, fromUser)
-			//}
+				else if (choice == 'F') {
+					std::cout << "\nEnter a username: ";
+					std::cin >> toUser;
+					userFound = findUsers(toUser);
+					if (userFound == false) {
+						std::cout << "\nNo Username [" << toUser << "] found!" << std::endl;
+						return 'f'; //Failed to find username.
+					}
+
+				}
 
 			}
-			else if (choice == 'F') {
-				std::cout << "\nEnter a username: ";
-				std::cin >> toUser;
-				userFound = findUsers(toUser);
-				if (userFound == false) {
-					std::cout << "\nNo Username [" << toUser << "] found!" << std::endl;
-					return 'f'; //Failed to find username.
-				}
 
+			DMCode = displayDMs(fromUser, toUser);//DM Code will decide if previous messages exist and in what format. I.E (from - to, to - from).
+
+			std::ifstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt"); //Checks if two users have message history (from - to)
+			std::ifstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt"); //Checks if two users have message history (to - from)
+			std::ofstream DMContactOut("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/DMContact/" + fromUser + "-" + "DMContacts.txt"); //output for a contacts.
+			//Using Found one and found two. Because a user can send a message as (Leo to Kim) or (Kim to Leo).
+			if (DMCode == '1') {
+				std::ofstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
+				std::cout << "\nEnter your message: ";
+				std::getline(std::cin, message);
+				DM_History << fromUser << ": " << message << std::endl;
+				logAction(fromUser, " sent a message to: ", toUser);
+			}
+			else if (DMCode == '2') {
+				std::ofstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt", std::ios::app); //Initializes DM between two users.
+				std::cout << "\nEnter your message: ";
+				std::getline(std::cin, message);
+				DM_History2 << fromUser << ": " << message << std::endl;
+				logAction(fromUser, " sent a message to: ", toUser);
+				displayDMs(fromUser, toUser);
 			}
 
+			else {//No chat exists so it creates one.
+				std::ofstream DM_HistoryNew("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
+				std::cout << "\nEnter your message: ";
+				std::getline(std::cin, message);
+				DM_HistoryNew << fromUser << ": " << message << std::endl;
+				DMContactOut << toUser << std::endl; // Uploads new DM Contact to file.
+				logAction(fromUser, " created a new conversation with: ", toUser);
+				displayDMs(fromUser, toUser);
+
+			}
 		}
+		else if(choice == 'V'){
+			std::string contact;
+			std::ifstream DMContactIn("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/DMContact/" + fromUser + "-" + "DMContacts.txt"); //Inputs for DM contacts.
+			if (DMContactIn.fail() == true) {
+				std::cout << "No DM history." << std::endl;
+			}
+			else {
+				while (std::getline(DMContactIn, contact)) {
 
-		DMCode = displayDMs(fromUser, toUser);//DM Code will decide if previous messages exist and in what format. I.E (from - to, to - from).
-
-		std::ifstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt"); //Checks if two users have message history (from - to)
-		std::ifstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt"); //Checks if two users have message history (to - from)
-
-		//Using Found one and found two. Because a user can send a message as (Leo to Kim) or (Kim to Leo).
-		if (DMCode == '1') {
-			std::ofstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
-			std::cout << "\nEnter your message: ";
-			std::getline(std::cin, message);
-			DM_History << fromUser << ": " << message << std::endl;
-			logAction(fromUser, " sent a message to: ", toUser);
-			displayDMs(fromUser, toUser);
-			
-		}
-		else if (DMCode == '2') {
-			std::ofstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt", std::ios::app); //Initializes DM between two users.
-			std::cout << "\nEnter your message: ";
-			std::getline(std::cin, message);
-			DM_History2 << fromUser << ": " << message << std::endl;
-			logAction(fromUser, " sent a message to: ", toUser);
-			displayDMs(fromUser, toUser);
-		}
-
-		else {//No chat exists so it creates one.
-			std::ofstream DM_HistoryNew("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
-			std::cout << "\nEnter your message: ";
-			std::getline(std::cin, message);
-			DM_HistoryNew << fromUser << ": " << message << std::endl;
-			logAction(fromUser, " created a new conversation with: ", toUser);
-			displayDMs(fromUser, toUser);
+					std::cout << contact << std::endl;
+				}
+			}
 
 		}
 		return 's'; //s for success.
 	}
-
 	// static bool displayDM(std::string fromUser, std::string toUser) {
 	static char displayDMs(std::string fromUser, std::string toUser) {
 
@@ -718,13 +727,17 @@ int main()
 			}
 			else if (post == 'D') {
 
-				DirectMessage::sendMessage(currentUser);
+				DirectMessage::sendViewMessage(currentUser);
 			}
 			else if (post == 'A') {
 				currentUser.addRemoveFriend(currentUser.getUserName());
 			}
 			else if (post == 'S') {
 				//loadSettings(currentUser.getUserName());
+			}
+			else if (post == 'C') {
+				clear(); // Clears history.
+
 			}
 			else {
 				std::cout << "\nPlease enter valid input!\n" << std::endl;
