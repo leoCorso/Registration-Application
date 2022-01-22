@@ -19,13 +19,16 @@
 static char main_Menu()//Prompts user to post or view message threads.
 {
 	char choice = ' ';
-	std::cout << "\n[P] - Post a new message to the Public Board.\n  [V] - View Public Board.\n    [D] - To Send/View a DM.\n      [A] - Add or Remove friends.      \n        [S] - Settings.\n          [C] - Clear History.\n            [L] - Log Out.\n\n>";
+
+	std::cout << "\n**********************************\n           MAIN MENU \n**********************************\n\n";
+	std::cout << "\n[P] - Post Menu\n[D] - DM Menu.\n[F] - Friends Menu.\n[S] - Settings Menu.\n[C] - Clear Console.\n[L] - Log Out.\n\n>";
 	std::cin >> choice;
 	choice = toupper(choice);
 
-	while (choice != 'P' && choice != 'V' && choice != 'L' && choice != 'D' && choice != 'A' && choice != 'C') {
-		std::cout << "\nPlease enter a valid option!" << std::endl;
-		std::cout << "\n[P] - Post a new message to the Public Board.\n  [V] - View Public Board.\n    [D] - To Send/View a DM.\n      [A] - Add friend.      \n        [L] - Log out.\n\n>";
+	while (choice != 'P' && choice != 'V' && choice != 'L' && choice != 'D' && choice != 'F' && choice != 'C') {
+		std::cout << "\n**********************************\n           MAIN MENU \n**********************************\n\n";
+		std::cout << "\n[Please enter a valid option!]" << std::endl;
+		std::cout << "\n[P] - Post Menu\n[D] - DM Menu.\n[A] - Friends Menu.\n[S] - Settings Menu.\n[C] - Clear Console.\n[L] - Log Out.\n\n>";
 		std::cin >> choice;
 		choice = toupper(choice);
 	}
@@ -60,17 +63,11 @@ void displayUsers() { //Displays a list of all usernames.
 	std::cout << "\n***" << count << " users found***\n\n";
 }
 
-//bool loadSettings(User currentUser) {
-//	char choice;
-//	std::cout << "[V] - View username & userID\n    [C] - Change password.\n      [P] - Change Privacy settings\n";
-//	choice = toupper(choice);
-//
-//	if (choice == 'V') {
-//		//ifstream userInfo;
-//
-//	}
-//
-//}
+//Things to add for settings(User& currentUser){}
+// Delte Friends
+// Delete DM's
+// Delete DM Contact
+//Change UserName
 
 class logAction { //Logs user, time and system actions by overloading action functions.
 
@@ -217,7 +214,6 @@ private:
 				users.push_back(uName);
 			}
 
-
 			flagSuccess = true; //Sets user to logged in.
 		}
 		return flagSuccess;
@@ -307,7 +303,7 @@ public:
 			currentUser.passWord = passAttempt; //Sets the current user Password
 			currentUser.setUserID(currentUser); //Sets the current user UserID
 			loggedIn = true; //Logs user in.
-			std::cout << "\nLogin successful!\n" << std::endl;
+			std::cout << "\nLogin successful.\n" << std::endl;
 			logAction(currentUser.userName, "Made a successful login.");
 		}
 		else {
@@ -334,9 +330,9 @@ public:
 
 	static char userLoginRegisterPrompt()//Prompts User to register or login.
 	{
+		std::cout <<"\n**********************************\n        LOGIN OR REGISTER \n**********************************\n\n";
+
 		char choice = ' ';
-
-
 		while (choice != 'L' && choice != 'R')
 		{
 			std::cout << "\t\n[L]-LOGIN \t\n[R]-REGISTER\n\n>";
@@ -354,6 +350,8 @@ public:
 
 	 bool addRemoveFriend(std::string userName) {
 
+		 std::cout << "\n**********************************\n         FRIENDS MENU \n**********************************\n\n";
+
 		 char choice = ' ';//Choice of adding friend or removing frine.
 		 std::ifstream Infriends;
 		 Infriends.open("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt");//Read friends list.
@@ -361,10 +359,10 @@ public:
 		 std::string toUser;//User to add or remove
 		 std::string userFriend; //Used to read each friend from friends list.
 
-		 while (choice != 'A' || choice != 'R' || choice != 'V' || choice != 'E')
+		 while (choice != 'A' && choice != 'R' && choice != 'V' && choice != 'E')
  {
 			 choice = ' ';
-			 std::cout << "\nPress [A] - Add Friend\nPress [R] - Remove Friend\nPress [V] - View friends\nPress [E] -Exit main menu.\n\n>";
+			 std::cout << "\nPress [F] - Add Friend\nPress [R] - Remove Friend\nPress [V] - View friends\nPress [E] - Exit main menu.\n\n>";
 			 std::cin >> choice;
 			 choice = toupper(choice);
 			 bool found = false; //Used for finding if a user exists and if a user is in your friends list.
@@ -479,6 +477,29 @@ private:
 	//time_t date; // Will eventually hold a time value.
 public:
 
+	static void postMenu(User& currentUser, bool loggedIn) {
+		std::cout << "\n**********************************\n          POST MENU\n**********************************\n\n";
+
+		char postChoice = ' ';
+		std::cout << "\n[P] - Post to board.\n[V] - View Board.\n[E] - Exit to main menu.\n\n>";
+		std::cin >> postChoice;
+		postChoice = toupper(postChoice);
+
+		if (postChoice == 'P') {
+			Post currentUserPost;//Initilize current post.
+			currentUserPost.loadPosts();
+			currentUserPost.postMessage(currentUser, loggedIn);
+			currentUserPost.loadPosts();
+			//PlaySound(TEXT("C:/Users/19097/Desktop/Programs/Registration Application/App files/Audio/ding.wav"), NULL, SND_FILENAME | SND_ASYNC); // Sound when message is posted
+		}
+		else if (postChoice == 'V') {
+			Post::loadPosts(); //Loads the post wall for viewing
+		}
+		else if (postChoice == 'E') {
+			std::cout << "\nExiting..." << std::endl;
+			return;
+		}
+	}
 	char postMessage(User& currentUser, bool loggedIn) {	//Will post a message to the board. Passes a User object.
 		if (loggedIn == false) {
 			std::cout << "You must be logged in to post!" << std::endl;
@@ -504,8 +525,7 @@ public:
 			std::cout << "No board exists!" << std::endl;
 			return false;
 		}
-		std::cout << "\n**********************************\n**********************************\n\n";
-		std::cout << "***Public Board***\n" << std::endl;
+		std::cout << "\n**********************************\n          GLOBAL POST\n**********************************\n\n";
 		while (getline(post, line)) {
 			std::cout << line << std::endl;
 		}
@@ -523,6 +543,7 @@ private:
 
 public:
 	static char sendViewMessage(User& currentUser) {
+		std::cout << "\n**********************************\n            DM MENU\n**********************************\n\n";
 		std::string toUser; //UserName that will be messaged
 		char choice = ' ';
 		bool userFound = false;
@@ -532,7 +553,7 @@ public:
 		std::string message;//Will hold current message being sent
 		std::string pastMessages; //Will hold line of past message
 		std::ofstream DM_HistoryNew; //Declaration of DM
-		std::cout << "[S] - Send\n[V] - View" << std::endl;
+		std::cout << "\n[S] - Send\n[V] - View\n[E] - Exit to main menu\n\n>";
 		std::cin >> choice;
 		choice = toupper(choice);
 
@@ -599,27 +620,43 @@ public:
 				std::cout << "\nEnter your message: ";
 				std::getline(std::cin, message);
 				DM_HistoryNew << fromUser << ": " << message << std::endl;
-				DMContactOut << toUser << std::endl; // Uploads new DM Contact to file.
+				addDMContact(fromUser, toUser); //Adds 
 				logAction(fromUser, " created a new conversation with: ", toUser);
 				displayDMs(fromUser, toUser);
 
 			}
 		}
 		else if(choice == 'V'){
-			std::string contact;
-			std::ifstream DMContactIn("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/DMContact/" + fromUser + "-" + "DMContacts.txt"); //Inputs for DM contacts.
-			if (DMContactIn.fail() == true) {
+			std::string contact; // DM Contact for Selection.
+			std::string DMContactView; // Contact choice for viewing DM history.
+			std::ifstream DMContactIn("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMContact/" + fromUser + "-DMContacts.txt"); //Inputs for DM contacts.
+
+			if (DMContactIn.fail() == true) {//No DM Histroy.
 				std::cout << "No DM history." << std::endl;
 			}
-			else {
+			else {//Shows DM Contacts.
+				std::cout << "\n********** [DM CONTACTS] **********\n\n";
 				while (std::getline(DMContactIn, contact)) {
 
-					std::cout << contact << std::endl;
+					std::cout << "- [" << contact << "]" << std::endl;
 				}
+				std::cout << "\nSelect a contact to view DM's\n\n>";
+				std::cin >> DMContactView; //Name for DM View
+				displayDMs(fromUser, DMContactView); //Actual call to display DM History.
 			}
 
 		}
+		else if (choice == 'E') {
+			std::cout << "\nExiting...\n\n";
+			return 'E';
+		}
 		return 's'; //s for success.
+	}
+
+	static void addDMContact(std::string fromUser, std::string toUser) {
+		std::ofstream DMContactWrite("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMContact/" + fromUser + "-DMContacts.txt", std::ios::app);
+		DMContactWrite << toUser << std::endl;
+		DMContactWrite.close();
 	}
 	// static bool displayDM(std::string fromUser, std::string toUser) {
 	static char displayDMs(std::string fromUser, std::string toUser) {
@@ -676,6 +713,7 @@ public:
 
 int main()
 {
+	std::cout << "\n**********************************\n    WELCOME TO QUICK SOCIAL!\n      [By-Leonardo Corso]\n**********************************\n";
 
 	bool quitProgram = false;
 	while (quitProgram != true) {
@@ -709,16 +747,9 @@ int main()
 		while (post != 'L') {
 			post = main_Menu(); //Prompts user to post or view or logout.
 
-			if (post == 'P' ) {
-				Post currentUserPost;//Initilize current post.
-				currentUserPost.loadPosts();
-				currentUserPost.postMessage(currentUser, loggedIn);
-				currentUserPost.loadPosts();
-				//PlaySound(TEXT("C:/Users/19097/Desktop/Programs/Registration Application/App files/Audio/ding.wav"), NULL, SND_FILENAME | SND_ASYNC); // Sound when message is posted
+			if (post == 'P') {
+				Post::postMenu(currentUser, loggedIn);
 
-			}
-			else if (post == 'V') {
-				Post::loadPosts(); //Loads the post wall for viewing
 			}
 			else if (post == 'L') {
 				loggedIn = currentUser.logOffUser(currentUser); //Log off user and delete the attributes of currentUser object from RAM.
@@ -729,7 +760,7 @@ int main()
 
 				DirectMessage::sendViewMessage(currentUser);
 			}
-			else if (post == 'A') {
+			else if (post == 'F') {
 				currentUser.addRemoveFriend(currentUser.getUserName());
 			}
 			else if (post == 'S') {
