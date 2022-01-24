@@ -37,7 +37,7 @@ static char main_Menu()//Prompts user to post or view message threads.
 }
 
 bool findUsers(std::string toUser) { //Check if a user with that name exists.
-	std::ifstream DM("C:/Users/19097/Desktop/Programs/Registration Application/App files/usernames/usernames.txt"); //File with all usernames.
+	std::ifstream DM("App files/usernames/usernames.txt"); //File with all usernames.
 	std::string compareuser;
 	bool foundUser = false;
 
@@ -51,7 +51,7 @@ bool findUsers(std::string toUser) { //Check if a user with that name exists.
 	return foundUser;
 }
 void displayUsers() { //Displays a list of all usernames.
-	std::ifstream Users("C:/Users/19097/Desktop/Programs/Registration Application/App files/usernames/usernames.txt");
+	std::ifstream Users("App files/usernames/usernames.txt");
 	std::string user;
 	std::cout << std::endl;
 	int count = 0;
@@ -73,21 +73,21 @@ class logAction { //Logs user, time and system actions by overloading action fun
 
 public:
 	logAction(std::string action) { //No user only string information logged.
-		std::ofstream log("C:/Users/19097/Desktop/Programs/Registration Application/App files/Logs/Logs.txt", std::ios::app);
+		std::ofstream log("App files/Logs/Logs.txt", std::ios::app);
 		log << "[" << getTime() << "] " << action << std::endl;
 
 	}
 	logAction(std::string UserName, std::string action) { //User performed an action.
 
-		std::ofstream log("C:/Users/19097/Desktop/Programs/Registration Application/App files/Logs/Logs.txt", std::ios::app);
+		std::ofstream log("App files/Logs/Logs.txt", std::ios::app);
 		log << "[" << getTime() << "] " << UserName << " " << action << std::endl;
 	}
 	logAction(std::string action, int UserID) { //Action performed on user.
-		std::ofstream log("C:/Users/19097/Desktop/Programs/Registration Application/App files/Logs/Logs.txt", std::ios::app);
+		std::ofstream log("App files/Logs/Logs.txt", std::ios::app);
 		log << "[" << getTime() << "] " << action << " " << UserID << std::endl;
 	}
 	logAction(std::string fromUser, std::string action, std::string toUser) { //Logs when users message DM each other.
-		std::ofstream log("C:/Users/19097/Desktop/Programs/Registration Application/App files/Logs/Logs.txt", std::ios::app);
+		std::ofstream log("App files/Logs/Logs.txt", std::ios::app);
 		log << "[" << getTime() << "] " << fromUser << action << toUser << std::endl;
 	}
 
@@ -164,7 +164,7 @@ private:
 	unsigned long long int setUserID(User& currentUser) { //Retrives the current userID of user.
 		std::string UserIdString;
 		std::string userName = currentUser.getUserName();
-		std::ifstream user("C:/Users/19097/Desktop/Programs/Registration Application/App files/UserDB/" + userName + "-UserCredentials.txt");
+		std::ifstream user("App files/UserDB/" + userName + "-UserCredentials.txt");
 
 		if (!user) {
 			return 0;
@@ -197,9 +197,9 @@ private:
 		}
 		else { //UserName Available
 
-			std::ofstream upload("C:/Users/19097/Desktop/Programs/Registration Application/App files/UserDB/" + userName + "-UserCredentials.txt");
-			std::ofstream uploadUName{ "C:/Users/19097/Desktop/Programs/Registration Application/App files/usernames/usernames.txt", std::ios::app };
-			std::ifstream sortNamesIF("C:/Users/19097/Desktop/Programs/Registration Application/App files/usernames/usernames.txt"); //Reads username contents.
+			std::ofstream upload("App files/UserDB/" + userName + "-UserCredentials.txt");
+			std::ofstream uploadUName{ "App files/usernames/usernames.txt", std::ios::app };
+			std::ifstream sortNamesIF("App files/usernames/usernames.txt"); //Reads username contents.
 			std::string uName;
 
 			
@@ -221,9 +221,9 @@ private:
 
 	void sortNames(std::vector<std::string>& users) { //Sorts usernames in username file.
 
-		std::ofstream sortNamesOut("C:/Users/19097/Desktop/Programs/Registration Application/App files/usernames/usernames.txt", std::ofstream::trunc);//Deletes username contents.
+		std::ofstream sortNamesOut("App files/usernames/usernames.txt", std::ofstream::trunc);//Deletes username contents.
 		std::sort(users.begin(), users.end());
-		std::ofstream sortNamesIn("C:/Users/19097/Desktop/Programs/Registration Application/App files/usernames/usernames.txt", std::ios::app);//Appends username contents
+		std::ofstream sortNamesIn("App files/usernames/usernames.txt", std::ios::app);//Appends username contents
 
 		for (size_t i = 0; i < users.size(); i++) {//Writes sorted names to file.
 			sortNamesIn << users[i] << std::endl;
@@ -255,7 +255,7 @@ public:
 
 	static char authenticateUser(std::string userAttempt, std::string passAtempt) { //Authenticates if user credentials exists.
 
-		std::ifstream readData("C:/Users/19097/Desktop/Programs/Registration Application/App files/UserDB/" + userAttempt + "-UserCredentials.txt"); //User Credentials files.
+		std::ifstream readData("App files/UserDB/" + userAttempt + "-UserCredentials.txt"); //User Credentials files.
 		char flag = ' ';
 
 		if (!readData)
@@ -323,6 +323,7 @@ public:
 		currentUser.passWord = "";
 		currentUser.UserID = 0;
 		loggedIn = false;
+		clear();
 		std::cout << "\nLog off successful!\n\n";
 		logAction::logAction(Temp, "Logged off successfuly");
 		return loggedIn; // We return false to set the loggedIn status as offline.
@@ -354,7 +355,7 @@ public:
 
 		 char choice = ' ';//Choice of adding friend or removing frine.
 		 std::ifstream Infriends;
-		 Infriends.open("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt");//Read friends list.
+		 Infriends.open("App files/friendsList/" + userName + "-friendslist.txt");//Read friends list.
 		 std::vector<std::string>tempVec;
 		 std::string toUser;//User to add or remove
 		 std::string userFriend; //Used to read each friend from friends list.
@@ -379,7 +380,7 @@ public:
 						 return false;//No uesr was found.
 					 }
 				 }
-				 std::ofstream friends("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt", std::ios::app); //Output to friends list.
+				 std::ofstream friends("App files/friendsList/" + userName + "-friendslist.txt", std::ios::app); //Output to friends list.
 				 friends << toUser << std::endl;
 				 friendsList.push_back(toUser);
 				 std::cout << "\n\n" << toUser << " has been added to your friends list." << std::endl;
@@ -410,14 +411,14 @@ public:
 							tempVec.push_back(userFriend);
 					}
 				}
-				temp.open("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/-temp.txt");//Read friends list.
+				temp.open("App files/friendsList/-temp.txt");//Read friends list.
 				Infriends.close();
-				remove(("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt").c_str());
+				remove(("App files/friendsList/" + userName + "-friendslist.txt").c_str());
 				for (int i = 0; i < tempVec.size(); i++) {
 					temp << tempVec[i] << std::endl;
 				}
 				temp.close();
-				rename("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/-temp.txt", ("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt").c_str());
+				rename("App files/friendsList/-temp.txt", ("App files/friendsList/" + userName + "-friendslist.txt").c_str());
 				std::cout << "\n\nUser " << toUser << " has been removed from your friends list." << std::endl;
 				logAction(userName, "Removed ", toUser);
 
@@ -438,7 +439,7 @@ public:
 
 	 bool displayFriends(std::string userName) {
 
-		 std::ifstream friends("C:/Users/19097/Desktop/Programs/Registration Application/App files/friendsList/" + userName + "-friendslist.txt"); //Used to read friends list.
+		 std::ifstream friends("App files/friendsList/" + userName + "-friendslist.txt"); //Used to read friends list.
 		 std::string userFriend;//Individual friend.
 
 		 if (friends.fail() == true) {//If not friends list exists.
@@ -512,13 +513,13 @@ public:
 		std::cout << "\nEnter your message: ";
 		std::cin.ignore(); //Clears string buffer.
 		getline(std::cin, message);
-		std::ofstream post("C:/Users/19097/Desktop/Programs/Registration Application/App files/UserPosts/-Posts.txt", std::ios::app); //File with user posts.
+		std::ofstream post("App files/UserPosts/-Posts.txt", std::ios::app); //File with user posts.
 		post << currentUser.getUserName() << ": " << message << std::endl;
 		post.close();
 		logAction(currentUser.getUserName(), "Made a post");
 	}
 	static bool loadPosts() {	//Will be for viewing the post history.
-		std::ifstream post("C:/Users/19097/Desktop/Programs/Registration Application/App files/UserPosts/-Posts.txt");
+		std::ifstream post("App files/UserPosts/-Posts.txt");
 		std::string line;
 
 		if (!post) {
@@ -542,6 +543,26 @@ private:
 	User toUser;
 
 public:
+	static char displayDMContacts(std::string fromUser) {
+
+		std::string contact; // DM Contact for Selection.
+		std::ifstream DMContactIn("App files/DMContact/" + fromUser + "-DMContacts.txt"); //Inputs for DM contacts.
+
+		if (DMContactIn.fail() == true) {//No DM Histroy.
+			std::cout << "\n[No DM history]" << std::endl;
+			return 'F';
+		}
+		else {//Shows DM Contacts.
+			std::cout << "\n********** [DM CONTACTS] **********\n\n";
+			while (std::getline(DMContactIn, contact)) {
+
+				std::cout << "- [" << contact << "]" << std::endl;
+			}
+			return 'S';
+		}
+
+	}
+
 	static char sendViewMessage(User& currentUser) {
 		std::cout << "\n**********************************\n            DM MENU\n**********************************\n\n";
 		std::string toUser; //UserName that will be messaged
@@ -595,19 +616,19 @@ public:
 
 			DMCode = displayDMs(fromUser, toUser);//DM Code will decide if previous messages exist and in what format. I.E (from - to, to - from).
 
-			std::ifstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt"); //Checks if two users have message history (from - to)
-			std::ifstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt"); //Checks if two users have message history (to - from)
-			std::ofstream DMContactOut("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/DMContact/" + fromUser + "-" + "DMContacts.txt"); //output for a contacts.
+			std::ifstream DM_History("App files/DMessages/" + fromUser + "-" + toUser + ".txt"); //Checks if two users have message history (from - to)
+			std::ifstream DM_History2("App files/DMessages/" + toUser + "-" + fromUser + ".txt"); //Checks if two users have message history (to - from)
+			std::ofstream DMContactOut("App files/DMessages/DMContact/" + fromUser + "-" + "DMContacts.txt"); //output for a contacts.
 			//Using Found one and found two. Because a user can send a message as (Leo to Kim) or (Kim to Leo).
 			if (DMCode == '1') {
-				std::ofstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
+				std::ofstream DM_History("App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
 				std::cout << "\nEnter your message: ";
 				std::getline(std::cin, message);
 				DM_History << fromUser << ": " << message << std::endl;
 				logAction(fromUser, " sent a message to: ", toUser);
 			}
 			else if (DMCode == '2') {
-				std::ofstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt", std::ios::app); //Initializes DM between two users.
+				std::ofstream DM_History2("App files/DMessages/" + toUser + "-" + fromUser + ".txt", std::ios::app); //Initializes DM between two users.
 				std::cout << "\nEnter your message: ";
 				std::getline(std::cin, message);
 				DM_History2 << fromUser << ": " << message << std::endl;
@@ -616,7 +637,7 @@ public:
 			}
 
 			else {//No chat exists so it creates one.
-				std::ofstream DM_HistoryNew("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
+				std::ofstream DM_HistoryNew("App files/DMessages/" + fromUser + "-" + toUser + ".txt", std::ios::app); //Initializes DM between two users.
 				std::cout << "\nEnter your message: ";
 				std::getline(std::cin, message);
 				DM_HistoryNew << fromUser << ": " << message << std::endl;
@@ -627,23 +648,15 @@ public:
 			}
 		}
 		else if(choice == 'V'){
-			std::string contact; // DM Contact for Selection.
-			std::string DMContactView; // Contact choice for viewing DM history.
-			std::ifstream DMContactIn("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMContact/" + fromUser + "-DMContacts.txt"); //Inputs for DM contacts.
-
-			if (DMContactIn.fail() == true) {//No DM Histroy.
-				std::cout << "No DM history." << std::endl;
+			
+			char DMFound = displayDMContacts(fromUser);
+			std::string DMContactView;
+			if (DMFound == 'F') {
+				return 'F';//For fail.
 			}
-			else {//Shows DM Contacts.
-				std::cout << "\n********** [DM CONTACTS] **********\n\n";
-				while (std::getline(DMContactIn, contact)) {
-
-					std::cout << "- [" << contact << "]" << std::endl;
-				}
-				std::cout << "\nSelect a contact to view DM's\n\n>";
-				std::cin >> DMContactView; //Name for DM View
-				displayDMs(fromUser, DMContactView); //Actual call to display DM History.
-			}
+			std::cout << "\nSelect a contact to view DM's\n\n>";
+			std::cin >> DMContactView; //Name for DM View
+			displayDMs(fromUser, DMContactView); //Actual call to display DM History.
 
 		}
 		else if (choice == 'E') {
@@ -653,16 +666,24 @@ public:
 		return 's'; //s for success.
 	}
 
+	static char removeDMContact(User& currentUser) {
+		
+		std::cout << "[Please be aware that removing a DM Contact will also delete entire DM history.]" << std::endl;
+
+
+
+	}
+
 	static void addDMContact(std::string fromUser, std::string toUser) {
-		std::ofstream DMContactWrite("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMContact/" + fromUser + "-DMContacts.txt", std::ios::app);
+		std::ofstream DMContactWrite("App files/DMContact/" + fromUser + "-DMContacts.txt", std::ios::app);
 		DMContactWrite << toUser << std::endl;
 		DMContactWrite.close();
 	}
 	// static bool displayDM(std::string fromUser, std::string toUser) {
 	static char displayDMs(std::string fromUser, std::string toUser) {
 
-		std::ifstream DM_History("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + fromUser + "-" + toUser + ".txt"); //Checks if two users have message history (from - to)
-		std::ifstream DM_History2("C:/Users/19097/Desktop/Programs/Registration Application/App files/DMessages/" + toUser + "-" + fromUser + ".txt"); //Checks if two users have message history (to - from)
+		std::ifstream DM_History("App files/DMessages/" + fromUser + "-" + toUser + ".txt"); //Checks if two users have message history (from - to)
+		std::ifstream DM_History2("App files/DMessages/" + toUser + "-" + fromUser + ".txt"); //Checks if two users have message history (to - from)
 		std::string pastMessages;
 
 		if (DM_History.fail() == false) {
@@ -703,16 +724,14 @@ public:
 
 
 	}
-
-	
-	//viewMessages();
-	//createGroup();
 };
 
 
 
 int main()
 {
+	std::ofstream test("Testing.txt");
+
 	std::cout << "\n**********************************\n    WELCOME TO QUICK SOCIAL!\n      [By-Leonardo Corso]\n**********************************\n";
 
 	bool quitProgram = false;
