@@ -1,8 +1,2 @@
-Leo: Hey
-Leo: Wassup
-Sam: Hello everyone!
-Sam: I'm new...
-Leo: 
-Leo: A
-Leo: Things are getting done!
-Leo: Lol
+Leo: Hello
+Leo: a
